@@ -1,6 +1,4 @@
 ######### Chi.Bio Operating System V1.0 #########
-##### 16/11/21 added custom programs 
-##### by N Laohakunakorn
 
 #Import required python packages
 import os
