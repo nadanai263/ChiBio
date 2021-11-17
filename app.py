@@ -1090,10 +1090,10 @@ def CustomProgram(M):
 
     elif (program=="C3"): 
         # turn pumps on or off
+        SetOutputOn(M,'Pump1',1)
+        time.sleep(3.0)
         SetOutputOn(M,'Pump1',0)
-        SetOutputOn(M,'Pump2',0)
-        SetOutputOn(M,'Pump3',0)
-        SetOutputOn(M,'Pump4',0)
+
     elif (program=="C4"): 
         print('running custom program')
     elif (program=="C5"): 
