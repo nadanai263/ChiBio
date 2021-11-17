@@ -1087,6 +1087,7 @@ def CustomProgram(M):
         ODthreshold = float(Params[1]) 
         PumpTarget = float(Params[2]) # Pump rate expressed as duty cycle between 0 and 1. Negative values to reverse direction
         PumpName = str(Params[3]) 
+        MaxTime = float(Params[4]) # maximum time to run pump for
 
         if sysData[M]['Experiment']['cycles']%interval==0: # proceed only after certain number of cycles
             currentOD = sysData[M]['OD']['current']
@@ -1099,12 +1100,12 @@ def CustomProgram(M):
                 sysData[M][PumpName]['direction'] = int(PumpTarget/abs(PumpTarget)) # -1 or 1 depending on sign of PumpTarget
                 SetOutputOn(M,PumpName,1)
 
-                # Turn pump off after a maximum of 40s even if it has not finished
-                time.sleep(40.0)
+                # Turn pump off after a maximum time
+                time.sleep(MaxTime)
                 SetOutputOn(M,PumpName,0) 
 
             else:
-                pass
+                SetOutputOn(M,PumpName,0) # else make sure the pump is off
 
         else:
             pass
