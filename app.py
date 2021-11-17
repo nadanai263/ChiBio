@@ -1059,50 +1059,72 @@ def SetCustom(Program,Status):
         sysData[M][item]['param3']=0.0
     return('',204)
 		
-        
+######################################
+# Custom programs
+######################################
+
+
 def CustomProgram(M):
-    #Runs a custom program, some examples are included. You can remove/edit this function as you see fit.
-    #Note that the custom programs (as set up at present) use an external .csv file with input parameters. THis is done to allow these parameters to easily be varied on the fly. 
+    # Runs a custom program. 
     global sysData
     M=str(M)
     program=sysData[M]['Custom']['Program']
-    #Subsequent few lines reads in external parameters from a file if you are using any.
 
-    
+    # Read in in external parameters from a file.
+    fname='InputParameters.txt'
+    with open(fname, 'r') as f:
+        lines = f.readlines()
+    striplines = [line.replace('\t', ' ').replace('\n','') for line in lines]
+    Params=[float(element) for element in striplines]
+    addTerminal(M,'Running Program = ' + str(program) + ' on device ' + str(M))
+
+    # Program definitions
     if (program=="C1"): 
-        print('\n')
-        print('custom program:')
-        print('hi')
-        print("let's get OD")
-        print(sysData[M]['OD']['current'])
-        print("is this OD more than threshold?")
-        answer = sysData[M]['OD']['current']>3.0
-        
-        if answer:
-            print("yes, let's do something\n")
+
+        # Parameter file is called 'InputParameters.txt'
+        # and has the following values:
+        interval = int(Params[0]) # number of experimental cycles to wait before running program
+        ODthreshold = float(Params[1]) 
+        PumpTarget = float(Params[2]) # Pump rate expressed as duty cycle between 0 and 1. Negative values to reverse direction
+        PumpName = str(Params[3]) 
+
+        if sysData[M]['Experiment']['cycles']%interval==0: # proceed only after certain number of cycles
+            currentOD = sysData[M]['OD']['current']
+            print('Current OD', currentOD)
+
+            if currentOD > ODthreshold:
+
+                # Turn pump on
+                sysData[M][PumpName]['target'] = PumpTarget
+                sysData[M][PumpName]['direction'] = int(PumpTarget/abs(PumpTarget)) # -1 or 1 depending on sign of PumpTarget
+                SetOutputOn(M,PumpName,1)
+
+                # Turn pump off after a maximum of 40s even if it has not finished
+                time.sleep(40.0)
+                SetOutputOn(M,PumpName,0) 
+
+            else:
+                pass
+
         else:
-            print("no, keep going\n")
-    
+            pass
+
     elif (program=="C2"): 
-        # measure OD
-        MeasureOD(M)
-        print(sysData[M]['OD']['current'])
-
+        pass
     elif (program=="C3"): 
-        # turn pumps on or off
-        SetOutputOn(M,'Pump1',1)
-        time.sleep(3.0)
-        SetOutputOn(M,'Pump1',0)
-
+        pass
     elif (program=="C4"): 
-        print('running custom program')
+        pass
     elif (program=="C5"): 
         pass
     elif (program=="C6"):
-        pass
-                
+        pass       
                 
     return
+
+
+######################################
+######################################
 
 def CustomLEDCycle(M,LED,Value):
     #This function cycles LEDs for a fraction of 30 seconds during an experiment.

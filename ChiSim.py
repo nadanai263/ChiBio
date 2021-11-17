@@ -2,6 +2,7 @@ import copy
 import time
 from datetime import datetime, date
 from threading import Thread, Lock
+import csv
 
 ######################################
 #Initialise data structures.
@@ -475,14 +476,24 @@ def SetCustom(Program,Status):
         
         
 def CustomProgram(M):
-    #Runs a custom program, some examples are included. You can remove/edit this function as you see fit.
-    #Note that the custom programs (as set up at present) use an external .csv file with input parameters. THis is done to allow these parameters to easily be varied on the fly. 
+    # Runs a custom program. 
     global sysData
     M=str(M)
     program=sysData[M]['Custom']['Program']
-    #Subsequent few lines reads in external parameters from a file if you are using any.
 
+    # Subsequent few lines reads in external parameters from a file.
+    fname='InputParameters.txt'
+    with open(fname, 'r') as f:
+        lines = f.readlines()
+    striplines = [line.replace('\t', ' ').replace('\n','') for line in lines]
+    Params=[element for element in striplines]
+
+    addTerminal(M,'Running Program = ' + str(program) + ' on device ' + str(M))
     
+    print('Current cycle', sysData[M]['Experiment']['cycles'])
+
+
+    # Program definitions
     if (program=="C1"): 
         print('\n')
         print('custom program:')
@@ -507,7 +518,28 @@ def CustomProgram(M):
         SetOutputOn(M,'Pump3',0)
         SetOutputOn(M,'Pump4',0)
     elif (program=="C4"): 
-        pass
+
+        interval = int(Params[0])
+        ODthreshold = float(Params[1])
+        PumpTarget = float(Params[2])
+        PumpName = str(Params[3])
+
+        if sysData[M]['Experiment']['cycles']%interval==0: # proceed only after certain number of cycles
+            currentOD = float(sysData[M]['OD']['current'])
+            print('Current OD', currentOD)
+
+            if currentOD > ODthreshold:
+
+                sysData[M][PumpName]['target'] = PumpTarget
+                sysData[M][PumpName]['direction'] = int(PumpTarget/abs(PumpTarget)) # -1 or 1 depending on sign of PumpTarget
+ #               SetOutputOn(M,PumpName,1)
+                print(PumpTarget, sysData[M][PumpName]['direction'])
+
+            else:
+                pass
+
+        else:
+            pass
     elif (program=="C5"): 
         pass
     elif (program=="C6"):
@@ -688,6 +720,6 @@ if __name__ == '__main__':
     initialiseAll()
     sysData['M0']['Experiment']['ON']=0
     sysData['M0']['Custom']['ON']=1
-    sysData['M0']['Custom']['Program']='C1'
+    sysData['M0']['Custom']['Program']='C4'
     ExperimentStartStop(0,1)
 
