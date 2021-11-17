@@ -1086,6 +1086,7 @@ def CustomProgram(M):
     elif (program=="C2"): 
         # measure OD
         MeasureOD(M)
+        print(sysData[M]['OD']['current'])
 
     elif (program=="C3"): 
         # turn pumps on or off
