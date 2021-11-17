@@ -1086,6 +1086,7 @@ def CustomProgram(M):
     elif (program=="C2"): 
         # measure OD
         MeasureOD(M)
+
     elif (program=="C3"): 
         # turn pumps on or off
         SetOutputOn(M,'Pump1',0)
@@ -1093,7 +1094,7 @@ def CustomProgram(M):
         SetOutputOn(M,'Pump3',0)
         SetOutputOn(M,'Pump4',0)
     elif (program=="C4"): 
-        pass
+        print('running custom program')
     elif (program=="C5"): 
         pass
     elif (program=="C6"):
