@@ -1096,8 +1096,7 @@ def CustomProgram(M):
             print('Current OD', currentOD)
 
             if currentOD > ODthreshold:
-                print('OD above threshold, turning on', PumpName)
-                print('OD above threshold, turning off Pump1')
+                print('OD above threshold, turning on', PumpName 'and Pump2')
                 print('Rate = ', PumpTarget)
                 print('Max time = ', MaxTime)
                 # Set up pumps
@@ -1119,8 +1118,7 @@ def CustomProgram(M):
                 SetOutputOn(M,'Pump1',0) 
 
             else:
-                print('OD below threshold, turning off', PumpName)
-                print('OD below threshold, turning on Pump1')
+                print('OD below threshold, turning on Pump1 and Pump2')
                 print('Rate = ', PumpTarget)
                 print('Max time = ', MaxTime)
                 # Set up pumps
@@ -1136,7 +1134,7 @@ def CustomProgram(M):
 
                 # Turn pump off after a maximum time
                 time.sleep(MaxTime)
-                print('Turning off', PumpName)
+                print('Turning off Pump1')
                 SetOutputOn(M,'Pump1',0)
                 SetOutputOn(M,'Pump2',0) 
                 SetOutputOn(M,PumpName,0) 
