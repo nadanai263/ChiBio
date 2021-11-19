@@ -1075,7 +1075,7 @@ def CustomProgram(M):
     with open(fname, 'r') as f:
         lines = f.readlines()
     striplines = [line.replace('\t', ' ').replace('\n','') for line in lines]
-    Params=[float(element) for element in striplines]
+    Params=[element for element in striplines]
     addTerminal(M,'Running Program = ' + str(program) + ' on device ' + str(M))
 
     # Program definitions
