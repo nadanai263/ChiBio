@@ -1090,29 +1090,58 @@ def CustomProgram(M):
         MaxTime = float(Params[4]) # maximum time to run pump for
 
         if sysData[M]['Experiment']['cycles']%interval==0: # proceed only after certain number of cycles
+
+            print('Cycle number', sysData[M]['Experiment']['cycles'])
             currentOD = sysData[M]['OD']['current']
             print('Current OD', currentOD)
 
             if currentOD > ODthreshold:
                 print('OD above threshold, turning on', PumpName)
+                print('OD above threshold, turning off Pump1')
                 print('Rate = ', PumpTarget)
                 print('Max time = ', MaxTime)
-                # Turn pump on
+                # Set up pumps
                 sysData[M][PumpName]['target'] = PumpTarget
-                sysData[M][PumpName]['direction'] = int(PumpTarget/abs(PumpTarget)) # -1 or 1 depending on sign of PumpTarget
-                SetOutputOn(M,PumpName,1)
+                sysData[M][PumpName]['direction'] = 1
+                
+                sysData[M]['Pump2']['target'] = -1*PumpTarget
+                sysData[M]['Pump2']['direction'] = -1
+
+                SetOutputOn(M,PumpName,1) # Turn on input pump
+                SetOutputOn(M,'Pump2',1) # Turn on output pump
+                SetOutputOn(M,'Pump1',0) # Make sure the pump1 is off
 
                 # Turn pump off after a maximum time
                 time.sleep(MaxTime)
                 print('Turning off', PumpName)
-                SetOutputOn(M,PumpName,0) 
+                SetOutputOn(M,PumpName,0)
+                SetOutputOn(M,'Pump2',0) 
+                SetOutputOn(M,'Pump1',0) 
 
             else:
                 print('OD below threshold, turning off', PumpName)
-                SetOutputOn(M,PumpName,0) # else make sure the pump is off
+                print('OD below threshold, turning on Pump1')
+                print('Rate = ', PumpTarget)
+                print('Max time = ', MaxTime)
+                # Set up pumps
+                sysData[M]['Pump1']['target'] = PumpTarget
+                sysData[M]['Pump1']['direction'] = 1
+                
+                sysData[M]['Pump2']['target'] = -1*PumpTarget
+                sysData[M]['Pump2']['direction'] = -1
 
+                SetOutputOn(M,'Pump1',1) # Turn on input pump
+                SetOutputOn(M,'Pump2',1) # Turn on output pump
+                SetOutputOn(M,PumpName,0) # Make sure the pump3 is off
+
+                # Turn pump off after a maximum time
+                time.sleep(MaxTime)
+                print('Turning off', PumpName)
+                SetOutputOn(M,'Pump1',0)
+                SetOutputOn(M,'Pump2',0) 
+                SetOutputOn(M,PumpName,0) 
         else:
-            pass
+            print('Cycle number', sysData[M]['Experiment']['cycles'])
 
     elif (program=="C2"): 
         # Test turning on Pump 3
