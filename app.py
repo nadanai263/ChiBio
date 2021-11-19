@@ -1094,7 +1094,9 @@ def CustomProgram(M):
             print('Current OD', currentOD)
 
             if currentOD > ODthreshold:
-
+                print('OD above threshold, turning on', PumpName)
+                print('Rate = ', PumpTarget)
+                print('Max time = ', MaxTime)
                 # Turn pump on
                 sysData[M][PumpName]['target'] = PumpTarget
                 sysData[M][PumpName]['direction'] = int(PumpTarget/abs(PumpTarget)) # -1 or 1 depending on sign of PumpTarget
@@ -1102,24 +1104,72 @@ def CustomProgram(M):
 
                 # Turn pump off after a maximum time
                 time.sleep(MaxTime)
+                print('Turning off', PumpName)
                 SetOutputOn(M,PumpName,0) 
 
             else:
+                print('OD below threshold, turning off', PumpName)
                 SetOutputOn(M,PumpName,0) # else make sure the pump is off
 
         else:
             pass
 
     elif (program=="C2"): 
-        pass
+        # Test turning on Pump 3
+        print('Turning on Pump 3')
+        SetOutputOn(M,'Pump3',1)
+        time.sleep(5.0)
+        print('Turning off Pump 3')
+        SetOutputOn(M,'Pump3',0)
+
     elif (program=="C3"): 
-        pass
+        # Test turning on Pump 3 using parameter file
+        interval = int(Params[0]) # number of experimental cycles to wait before running program
+        ODthreshold = float(Params[1]) 
+        PumpTarget = float(Params[2]) # Pump rate expressed as duty cycle between 0 and 1. Negative values to reverse direction
+        PumpName = str(Params[3]) 
+        MaxTime = float(Params[4]) # maximum time to run pump for
+
+        print('Turning on', PumpName)
+        SetOutputOn(M,PumpName,1)
+        time.sleep(5.0)
+        print('Turning off', PumpName)
+        SetOutputOn(M,PumpName,0)
+
     elif (program=="C4"): 
-        pass
+        # Test turning on Pump 1
+        print('Turning on Pump 1')
+        SetOutputOn(M,'Pump1',1)
+        time.sleep(5.0)
+        print('Turning off Pump 1')
+        SetOutputOn(M,'Pump1',0)
+
     elif (program=="C5"): 
-        pass
+        # Set rate for Pump 3 manually then switch on
+        print('Setting rate for Pump 3')
+        sysData[M]['Pump3']['target'] = 0.1
+        print('Turning on Pump 3')
+        SetOutputOn(M,'Pump3',1)
+        time.sleep(5.0)
+        print('Turning off Pump 3')
+        SetOutputOn(M,'Pump3',0)
+
     elif (program=="C6"):
-        pass       
+        # Set rate for Pump 3 from parameter file then switch on
+
+        interval = int(Params[0]) # number of experimental cycles to wait before running program
+        ODthreshold = float(Params[1]) 
+        PumpTarget = float(Params[2]) # Pump rate expressed as duty cycle between 0 and 1. Negative values to reverse direction
+        PumpName = str(Params[3]) 
+        MaxTime = float(Params[4]) # maximum time to run pump for
+
+        print('Setting rate for', PumpName)
+        sysData[M][PumpName]['target'] = PumpTarget
+        print('Turning on', PumpName)
+        SetOutputOn(M,PumpName,1)
+        time.sleep(5.0)
+        print('Turning off', PumpName)
+        SetOutputOn(M,PumpName,0)       
                 
     return
 
